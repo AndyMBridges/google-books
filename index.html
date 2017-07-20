@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <title>Books API Example</title>
+    <style>
+        #content li {
+            list-style-type:none;
+            width:150px;
+            float:left;
+        }
+        #content li img, #content li span, #content li a {
+            float:left;
+            width:100%;
+        }
+    </style>
+  </head>
+  <body>
+    <input id="search" type="text" /><input id="submit" type="submit" value="Search"/>
+    <div id="content"></div>
+    <script>
+    // https://scotch.io/tutorials/how-to-use-the-javascript-fetch-api-to-get-data
+
+    var submitBtn = document.getElementById('submit');
+
+    submitBtn.addEventListener("click", search);
+
+    function search() {
+
+
+        function createNode(element) {
+            return document.createElement(element);
+        }
+
+        function append(parent, el) {
+          return parent.appendChild(el);
+        }
+
+        var value = document.getElementById('search').value;
+        var content = document.getElementById('content');
+        var json = `https://www.googleapis.com/books/v1/volumes?q=isbn:${value}`;
+
+        // Clear the content
+        content.innerHTML = "";
+
+        fetch(json)
+        .then((resp) => resp.json())
+        .then(function(data) {
+              let books = data.items;
+              return books.map(function(book) {
+                let li = createNode('li'),
+                    img = createNode('img'),
+                    span = createNode('span');
+                    btn = createNode('a');
+                img.src = book.volumeInfo.imageLinks.thumbnail;
+                span.innerHTML = `${book.volumeInfo.title}`;
+                btn.innerHTML = `order new page`
+                btn.href = `http://www.orderanewcover.com?q=${value}`
+                append(li, img);
+                append(li, span);
+                append(li, btn);
+                append(content, li);
+              })
+        })
+        .catch(function(error) {
+            alert('Incorrect ISBN');
+          console.log(error);
+        });
+
+    }
+    </script>
+  </body>
+</html>
